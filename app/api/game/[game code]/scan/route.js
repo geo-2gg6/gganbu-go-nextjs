@@ -23,18 +23,15 @@ export async function POST(request, { params }) {
     
     const questionObject = game.questions.find(q => q.question === questionPlayer.currentQuestion);
 
-    // --- Core Scan Logic: Check for a Match ---
     if (questionObject && questionObject.answer === scannedAnswer) {
-      // It's a match! Update scores.
       questionPlayer.score += 1;
       answerPlayer.score += 1;
       
-      // Clear current Q&A
+      const oldQuestion = questionPlayer.currentQuestion;
       questionPlayer.currentQuestion = null;
       answerPlayer.currentAnswer = null;
 
-      // Assign new Q&A if available
-      const usedQuestions = game.players.map(p => p.currentQuestion).filter(Boolean);
+      const usedQuestions = game.players.map(p => p.currentQuestion).filter(Boolean).concat([oldQuestion]);
       const availablePair = game.questions.find(q => !usedQuestions.includes(q.question));
       
       if (availablePair) {
@@ -42,7 +39,6 @@ export async function POST(request, { params }) {
         answerPlayer.currentAnswer = availablePair.answer;
       }
       
-      // Check for winners
       [questionPlayer, answerPlayer].forEach(p => {
         if (p.score >= 5 && !game.winners.find(w => w.name === p.name)) {
           game.winners.push({ name: p.name, rank: game.winners.length + 1 });
@@ -51,16 +47,14 @@ export async function POST(request, { params }) {
       
       await game.save();
 
-      // Trigger Pusher event for score update
-      await pusher.trigger(`game-${gameCode}`, 'score-update', { game });
+      await pusher.trigger(`game-${gameCode.toUpperCase()}`, 'score-update', { game });
 
       if (game.winners.length >= 3) {
-         await pusher.trigger(`game-${gameCode}`, 'game-over', { winners: game.winners });
+         await pusher.trigger(`game-${gameCode.toUpperCase()}`, 'game-over', { winners: game.winners });
       }
 
       return NextResponse.json({ success: true, message: "Match found!", game }, { status: 200 });
     } else {
-      // Not a match
       return NextResponse.json({ success: false, message: "Not a match. Keep searching!" }, { status: 200 });
     }
   } catch (error) {

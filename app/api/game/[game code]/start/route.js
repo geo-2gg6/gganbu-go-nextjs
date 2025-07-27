@@ -13,7 +13,6 @@ export async function POST(request, { params }) {
       return NextResponse.json({ message: "Game not found." }, { status: 404 });
     }
 
-    // --- Core Game Logic: Shuffle and Assign Teams ---
     const shuffledPlayers = [...game.players].sort(() => 0.5 - Math.random());
     const midpoint = Math.ceil(shuffledPlayers.length / 2);
     
@@ -43,8 +42,7 @@ export async function POST(request, { params }) {
     game.gameStarted = true;
     await game.save();
 
-    // Trigger Pusher event to start the game for all players
-    await pusher.trigger(`game-${gameCode}`, 'game-started', { game });
+    await pusher.trigger(`game-${gameCode.toUpperCase()}`, 'game-started', { game });
     
     return NextResponse.json({ message: "Game started successfully!", game }, { status: 200 });
   } catch (error) {

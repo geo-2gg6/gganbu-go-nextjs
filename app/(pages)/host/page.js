@@ -28,7 +28,8 @@ export default function HostPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        router.push(`/${data.gameCode}`); // Redirect to the waiting room
+        sessionStorage.setItem('hostCode', data.gameCode);
+        router.push(`/${data.gameCode}`);
       } else {
         alert(data.message);
       }

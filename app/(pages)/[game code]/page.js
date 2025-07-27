@@ -1,31 +1,22 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Pusher from 'pusher-js';
 
-export default function WaitingRoom() {
+export default function WaitingRoomPage() {
   const params = useParams();
   const router = useRouter();
-  const gameCode = params.gameCode;
+  const gameCode = params.gameCode.toUpperCase();
   
   const [players, setPlayers] = useState([]);
   const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
-    // Check if the current user is the host
     const hostCode = sessionStorage.getItem('hostCode');
     if (hostCode === gameCode) {
       setIsHost(true);
     }
-    
-    // Fetch initial players
-    const fetchGame = async () => {
-      // You could create a GET API route to fetch game state, or just rely on Pusher
-    };
-    fetchGame();
 
-    // --- Pusher Real-time Setup ---
     const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY, {
       cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER,
     });
@@ -36,7 +27,8 @@ export default function WaitingRoom() {
       setPlayers(data.players);
     });
 
-    channel.bind('game-started', () => {
+    channel.bind('game-started', (data) => {
+      sessionStorage.setItem('game-state', JSON.stringify(data.game));
       router.push(`/${gameCode}/play`);
     });
 

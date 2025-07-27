@@ -27,8 +27,7 @@ export async function POST(request, { params }) {
     game.players.push(newPlayer);
     await game.save();
 
-    // Trigger Pusher event to notify waiting room
-    await pusher.trigger(`game-${gameCode}`, 'player-joined', { players: game.players });
+    await pusher.trigger(`game-${gameCode.toUpperCase()}`, 'player-joined', { players: game.players });
     
     return NextResponse.json({ playerId: newPlayer.id, players: game.players }, { status: 200 });
   } catch (error) {

@@ -8,7 +8,8 @@ export default function JoinPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleJoin = async () => {
+  const handleJoin = async (e) => {
+    e.preventDefault();
     if (!name || !code) {
       alert('Please enter your name and the game code.');
       return;
@@ -22,7 +23,6 @@ export default function JoinPage() {
       });
       const data = await response.json();
       if (response.ok) {
-        // Store player info to use on the next page
         sessionStorage.setItem('playerId', data.playerId);
         sessionStorage.setItem('playerName', name);
         router.push(`/${code.toUpperCase()}`);
@@ -38,7 +38,7 @@ export default function JoinPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-4">
       <h1 className="text-4xl font-bold uppercase">Join Game</h1>
-      <div className="mt-8 flex w-full max-w-xs flex-col space-y-4">
+      <form onSubmit={handleJoin} className="mt-8 flex w-full max-w-xs flex-col space-y-4">
         <input
           type="text"
           placeholder="Your Name"
@@ -54,14 +54,14 @@ export default function JoinPage() {
           onChange={(e) => setCode(e.target.value)}
           maxLength="6"
         />
-      </div>
-      <button
-        className="mt-6 w-full max-w-xs rounded-lg bg-[--teal] py-4 text-xl font-bold uppercase transition hover:scale-105 disabled:opacity-50"
-        onClick={handleJoin}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Joining...' : 'Enter'}
-      </button>
+         <button
+            type="submit"
+            className="mt-6 w-full max-w-xs rounded-lg bg-[--teal] py-4 text-xl font-bold uppercase transition hover:scale-105 disabled:opacity-50"
+            disabled={isLoading}
+        >
+            {isLoading ? 'Joining...' : 'Enter'}
+        </button>
+      </form>
     </main>
   );
 }

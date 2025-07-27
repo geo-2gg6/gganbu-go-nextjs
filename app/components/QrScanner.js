@@ -4,17 +4,19 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 
 export default function QrScanner({ onScan }) {
   useEffect(() => {
-    const scanner = new Html5QrcodeScanner(
+    let scanner;
+    function onScanSuccess(decodedText, decodedResult) {
+      if(scanner) {
+        scanner.clear();
+      }
+      onScan(decodedText);
+    }
+
+    scanner = new Html5QrcodeScanner(
       'qr-reader', 
       { fps: 10, qrbox: { width: 250, height: 250 } }, 
       false
     );
-
-    const onScanSuccess = (decodedText, decodedResult) => {
-      scanner.clear();
-      onScan(decodedText);
-    };
-
     scanner.render(onScanSuccess, console.warn);
 
     return () => {

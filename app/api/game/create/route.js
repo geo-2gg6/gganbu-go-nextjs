@@ -2,7 +2,6 @@ import dbConnect from "@/lib/mongodb";
 import Game from "@/models/Game";
 import { NextResponse } from "next/server";
 
-// Function to generate a unique 6-character code
 function generateGameCode() {
   const chars = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789';
   let result = '';

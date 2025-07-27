@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 const PlayerSchema = new mongoose.Schema({
-  id: String, // We will use a unique ID for each player
+  id: String,
   name: String,
   score: { type: Number, default: 0 },
-  team: String, // 'red' or 'blue'
-  role: String, // 'question' or 'answer'
+  team: String,
+  role: String,
   currentQuestion: String,
   currentAnswer: String,
 });
